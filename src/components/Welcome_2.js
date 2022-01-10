@@ -1,36 +1,14 @@
-import React, { createRef, useEffect } from 'react';
+import React, { Component, createRef, useEffect, useState} from 'react';
 import * as THREE from 'three';
 import {FontLoader} from 'three/examples/jsm/loaders/FontLoader'
+
+
 export default function Welcome2() {
-  const divRef = createRef();
-  useEffect(() => {
-    // const scene = new THREE.Scene();
-    // const camera = new THREE.PerspectiveCamera(
-    //   75,
-    //   window.innerWidth / window.innerHeight,
-    //   0.1,
-    //   1000
-    // );
-
-    // const renderer = new THREE.WebGLRenderer();
-    // renderer.setSize(window.innerWidth, window.innerHeight);
-    // divRef.current.appendChild(renderer.domElement);
-    // const geometry = new THREE.BoxGeometry();
-    // const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    // const cube = new THREE.Mesh(geometry, material);
-    // scene.add(cube);
-    // camera.position.z = 5;
-
-    
-    // function animate() {
-    //   requestAnimationFrame(animate);
-    //   cube.rotation.x += 0.01;
-    //   cube.rotation.y += 0.01;
-    //   renderer.render(scene, camera);
-    // }
-    // animate();
-
+    const divRef = createRef();
+    const [Welcome_Bool, setWelcome_Bool] = useState();
     const scene = new THREE.Scene()
+    useEffect(() => {
+    
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000)
     camera.position.z = 1
     camera.rotation.x = Math.PI/2
@@ -38,8 +16,6 @@ export default function Welcome2() {
     const renderer = new THREE.WebGLRenderer()
     renderer.setSize(window.innerWidth, window.innerHeight)
     document.body.appendChild(renderer.domElement)
-
-
     const starGeo = new THREE.BufferGeometry()
     const points = []
     for(let i=0;i<5000;i++){
@@ -55,7 +31,6 @@ export default function Welcome2() {
     starGeo.setFromPoints( points)
 
     let sprite = new THREE.TextureLoader().load('logo192.png')
-    console.log(sprite)
     let starMaterial = new THREE.PointsMaterial({
         color: 0xaaaaaa,
         size: 0.7,
@@ -77,6 +52,7 @@ export default function Welcome2() {
       mouseX = event.clientX;
       mouseY = event.clientY;
       }, false);
+
       document.body.addEventListener("mousedown", function(event) {
       mouseDown = true
       }, false);
@@ -84,8 +60,11 @@ export default function Welcome2() {
       mouseDown = false
       }, false);
 
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     function animate() {
-      // console.log(starGeo.attributes)
       starGeo.verticesNeedUpdate = true
       camera.position.z +=0.01
       stars.rotation.y += 0.004
@@ -94,13 +73,26 @@ export default function Welcome2() {
 
       spdy =  (screenH / 2 - mouseY) / 100;
       spdx =  (screenW / 2 - mouseX) / 100;
+      
+
       if (mouseDown){
+        console.log(mouseX, mouseY)
+        if (mouseX > screenW/2.3) {
+          if (mouseX < screenW/1.7){
+            if (mouseY > screenH/2.3) {
+              if (mouseY < screenH/1.85) {
+                console.log('button area!')
+                spdy = spdy + 3*spdy
+              }
+            }
+          }
+        }
         stars.rotation.x = spdy;
         stars.rotation.y = spdx;
       }
 
     }
     animate()
-  }, [divRef]);
-  return <div className="Welcome2" ref={divRef} style={{position:'absolute'}} />;
+  });
+  return <div className="Welcome2"  style={{position:'absolute'}} />;
 }
