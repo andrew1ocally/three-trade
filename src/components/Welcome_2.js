@@ -1,21 +1,27 @@
-import React, { Component, createRef, useEffect, useState} from 'react';
+import React, { Component, createRef, useRef, useEffect, useState} from 'react';
 import * as THREE from 'three';
 import {FontLoader} from 'three/examples/jsm/loaders/FontLoader'
 
 
-export default function Welcome2() {
-    const divRef = createRef();
-    const [Welcome_Bool, setWelcome_Bool] = useState();
-    const scene = new THREE.Scene()
-    useEffect(() => {
+export default function Welcome2(logged_in, welcomestate) {
+    const [login_stat, setlogin_stat] = useState(logged_in)
     
+    const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000)
+    const renderer = new THREE.WebGLRenderer()
+
+    console.log(logged_in)
     camera.position.z = 1
     camera.rotation.x = Math.PI/2
 
-    const renderer = new THREE.WebGLRenderer()
-    renderer.setSize(window.innerWidth, window.innerHeight)
+    let count = useRef(0)
+    useEffect(() => {
+      count.current++
+    console.log(count)
+    if (count.current<=1){
     document.body.appendChild(renderer.domElement)
+    renderer.setSize(window.innerWidth, window.innerHeight)
+    }
     const starGeo = new THREE.BufferGeometry()
     const points = []
     for(let i=0;i<5000;i++){
@@ -25,6 +31,10 @@ export default function Welcome2() {
         Math.random() *600 - 300,
         )
       star.velocity = 0
+      if (logged_in===true) {
+        console.log('yeah we got here..')
+        star.acceleration = 3  
+      }
       star.acceleration = 0.02
       points.push(star)
     }
@@ -48,6 +58,7 @@ export default function Welcome2() {
     var mouseX = 0
     var mouseY = 0
     var mouseDown = false; /*MOUSE*/
+
     document.addEventListener('mousemove', function(event) {
       mouseX = event.clientX;
       mouseY = event.clientY;
@@ -68,31 +79,26 @@ export default function Welcome2() {
       starGeo.verticesNeedUpdate = true
       camera.position.z +=0.01
       stars.rotation.y += 0.004
-      renderer.render(scene,camera)
-      requestAnimationFrame(animate)
 
       spdy =  (screenH / 2 - mouseY) / 100;
       spdx =  (screenW / 2 - mouseX) / 100;
       
 
       if (mouseDown){
-        console.log(mouseX, mouseY)
-        if (mouseX > screenW/2.3) {
-          if (mouseX < screenW/1.7){
-            if (mouseY > screenH/2.3) {
-              if (mouseY < screenH/1.85) {
-                console.log('button area!')
-                spdy = spdy + 3*spdy
-              }
-            }
-          }
-        }
         stars.rotation.x = spdy;
         stars.rotation.y = spdx;
+      }
+      if (logged_in){
+        if (welcomestate===false){
+          stars.rotation.y += 4
+          camera.position.z +=1
+      } 
+      renderer.render(scene,camera)
+      requestAnimationFrame(animate)
       }
 
     }
     animate()
-  });
-  return <div className="Welcome2"  style={{position:'absolute'}} />;
+  }, [logged_in, welcomestate]);
+  return <div className="Welcome2"  style={{}} />;
 }

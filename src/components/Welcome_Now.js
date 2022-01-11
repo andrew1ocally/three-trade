@@ -30,5 +30,5 @@ export default function Welcome() {
     }
     animate();
   }, [divRef]);
-  return <div className="Welcome" ref={divRef} />;
+  return <div className="Welcome" ref={divRef} style={{overflow:'hidden'}}/>;
 }
